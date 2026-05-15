@@ -1,13 +1,15 @@
+import { NavLink } from 'react-router-dom'
+
 export function Header() {
   return (
     <header className="site-header">
-      <a className="logo" href="#top" aria-label="Saúl Ordonez home">
+      <NavLink className="logo" to="/" aria-label="Saúl Ordonez home">
         SO
-      </a>
+      </NavLink>
       <nav className="nav-links" aria-label="Main navigation">
-        <a href="#projects">Projects</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <NavLink to="/projects">Projects</NavLink>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/contact">Contact</NavLink>
       </nav>
     </header>
   )

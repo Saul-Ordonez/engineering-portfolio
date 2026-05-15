@@ -1,4 +1,5 @@
 export type Project = {
+  slug: string
   title: string
   course: string
   tools: string[]
@@ -7,6 +8,7 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: 'rgb-led-system',
     title: 'Microcontroller Lab: RGB LED System',
     course: 'ENGR 151',
     tools: ['Raspberry Pi Pico', 'MicroPython', 'PWM', 'VS Code'],
@@ -14,6 +16,7 @@ export const projects: Project[] = [
       'Built and programmed an RGB LED circuit using pulse-width modulation to control color and brightness through code.',
   },
   {
+    slug: 'thermistor-temperature-monitor',
     title: 'Thermistor Temperature Monitor',
     course: 'ENGR 151',
     tools: ['Voltage Divider', 'ADC', 'Python', 'Circuit Analysis'],
@@ -21,6 +24,7 @@ export const projects: Project[] = [
       'Used a thermistor and voltage divider circuit to read changing temperature values and trigger status LEDs based on set points.',
   },
   {
+    slug: 'cad-design-practice',
     title: 'CAD Design Practice',
     course: 'Engineering Graphics / Personal Practice',
     tools: ['CAD', '3D Modeling', 'Technical Drawings'],

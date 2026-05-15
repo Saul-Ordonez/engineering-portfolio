@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Project } from '../data/projects'
 
 type ProjectCardProps = {
@@ -15,6 +16,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <span key={tool}>{tool}</span>
         ))}
       </div>
+      <Link className="text-link" to={`/projects/${project.slug}`}>
+        View project
+      </Link>
     </article>
   )
 }

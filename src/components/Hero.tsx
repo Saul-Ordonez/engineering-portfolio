@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export function Hero() {
   return (
     <section className="hero-section" id="top">
@@ -11,12 +13,12 @@ export function Hero() {
           they grow from lab work into a full engineering portfolio.
         </p>
         <div className="hero-actions">
-          <a className="button primary-button" href="#projects">
+          <Link className="button primary-button" to="/projects">
             View Projects
-          </a>
-          <a className="button secondary-button" href="#contact">
+          </Link>
+          <Link className="button secondary-button" to="/contact">
             Get in Touch
-          </a>
+          </Link>
         </div>
       </div>
 
