@@ -32,3 +32,13 @@ export const projects: Project[] = [
       'Created mechanical-style models and drawings to practice dimensioning, visualization, and design communication.',
   },
 ]
+
+const featuredProjectSlugs = [
+  'rgb-led-system',
+  'thermistor-temperature-monitor',
+  'cad-design-practice',
+]
+
+export const featuredProjects = featuredProjectSlugs
+  .map((slug) => projects.find((project) => project.slug === slug))
+  .filter((project): project is Project => Boolean(project))

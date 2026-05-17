@@ -1,4 +1,4 @@
-import { projects } from '../data/projects'
+import { featuredProjects } from '../data/projects'
 import { ProjectCard } from './ProjectCard'
 
 export function ProjectsSection() {
@@ -15,8 +15,8 @@ export function ProjectsSection() {
       </div>
 
       <div className="project-grid">
-        {projects.map((project) => (
-          <ProjectCard project={project} key={project.title} />
+        {featuredProjects.map((project) => (
+          <ProjectCard project={project} key={project.slug} />
         ))}
       </div>
     </section>
