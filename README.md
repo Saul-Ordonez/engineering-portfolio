@@ -1,7 +1,7 @@
 # Engineering Portfolio
 
-A React and TypeScript portfolio for documenting engineering coursework,
-projects, build notes, and media. The public site is a lightweight project
+A React and TypeScript portfolio for documenting my engineering coursework,
+projects, build notes, and media. This public site is a lightweight project
 library, while the private admin route lets project entries be managed without
 editing source files directly.
 
@@ -10,7 +10,7 @@ editing source files directly.
 - Responsive portfolio pages for home, projects, about, contact, and project
   detail views
 - Supabase-backed project data with a local fallback for development
-- Private `/admin/projects` editor for creating, updating, publishing, featuring,
+- Private editor for creating, updating, publishing, featuring,
   and deleting projects
 - Project media support through Supabase Storage, including image/video uploads,
   removable previews, and a selectable highlight image
@@ -68,8 +68,6 @@ VITE_SUPABASE_ANON_KEY=your-public-anon-key
 VITE_ADMIN_EMAIL=you@example.com
 ```
 
-5. Restart Vite and visit `/admin/projects`.
-
 The SQL file creates the `projects` table, enables row-level security, grants the
 required browser roles, seeds starter projects, and creates the public
 `project-media` storage bucket with admin-only upload/update/delete policies.
@@ -102,6 +100,3 @@ Each project supports:
 - `featured`
 - `display_order`
 - `is_published`
-
-`description` is used for concise project summaries and cards. `notes` is used
-for the longer project detail write-up.
