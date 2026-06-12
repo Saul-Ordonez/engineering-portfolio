@@ -6,8 +6,13 @@ type ProjectCardProps = {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const coverImage = project.coverImageUrl || project.imageUrls?.[0]
+
   return (
     <article className="project-card">
+      {coverImage ? (
+        <img className="project-card-image" src={coverImage} alt="" />
+      ) : null}
       <p className="project-course">{project.course}</p>
       <h3>{project.title}</h3>
       <p>{project.description}</p>

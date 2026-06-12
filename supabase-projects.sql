@@ -7,6 +7,10 @@ create table if not exists public.projects (
   course text not null,
   tools text[] not null default '{}',
   description text not null,
+  notes text not null default '',
+  image_urls text[] not null default '{}',
+  video_urls text[] not null default '{}',
+  cover_image_url text not null default '',
   featured boolean not null default false,
   display_order integer not null default 0,
   is_published boolean not null default true,
@@ -14,7 +18,21 @@ create table if not exists public.projects (
   updated_at timestamptz not null default now()
 );
 
+alter table public.projects
+  add column if not exists notes text not null default '',
+  add column if not exists image_urls text[] not null default '{}',
+  add column if not exists video_urls text[] not null default '{}',
+  add column if not exists cover_image_url text not null default '';
+
 alter table public.projects enable row level security;
+
+grant usage on schema public to anon, authenticated;
+grant select on public.projects to anon;
+grant select, insert, update, delete on public.projects to authenticated;
+
+insert into storage.buckets (id, name, public)
+values ('project-media', 'project-media', true)
+on conflict (id) do update set public = true;
 
 create or replace function public.set_updated_at()
 returns trigger as $$
@@ -35,6 +53,10 @@ drop policy if exists "Published projects are public" on public.projects;
 drop policy if exists "Only admin can insert projects" on public.projects;
 drop policy if exists "Only admin can update projects" on public.projects;
 drop policy if exists "Only admin can delete projects" on public.projects;
+drop policy if exists "Project media is public" on storage.objects;
+drop policy if exists "Only admin can upload project media" on storage.objects;
+drop policy if exists "Only admin can update project media" on storage.objects;
+drop policy if exists "Only admin can delete project media" on storage.objects;
 
 create policy "Published projects are public"
 on public.projects
@@ -56,6 +78,39 @@ create policy "Only admin can delete projects"
 on public.projects
 for delete
 using (auth.jwt() ->> 'email' = 'sauleordonez@gmail.com');
+
+create policy "Project media is public"
+on storage.objects
+for select
+using (bucket_id = 'project-media');
+
+create policy "Only admin can upload project media"
+on storage.objects
+for insert
+with check (
+  bucket_id = 'project-media'
+  and auth.jwt() ->> 'email' = 'sauleordonez@gmail.com'
+);
+
+create policy "Only admin can update project media"
+on storage.objects
+for update
+using (
+  bucket_id = 'project-media'
+  and auth.jwt() ->> 'email' = 'sauleordonez@gmail.com'
+)
+with check (
+  bucket_id = 'project-media'
+  and auth.jwt() ->> 'email' = 'sauleordonez@gmail.com'
+);
+
+create policy "Only admin can delete project media"
+on storage.objects
+for delete
+using (
+  bucket_id = 'project-media'
+  and auth.jwt() ->> 'email' = 'sauleordonez@gmail.com'
+);
 
 insert into public.projects (
   slug,

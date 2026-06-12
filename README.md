@@ -3,13 +3,15 @@
 ## Supabase project admin
 
 This portfolio can load project cards from Supabase and includes a private
-`/admin/projects` screen for adding, editing, publishing, featuring, and
-deleting project entries.
+`/admin/projects` screen for adding, editing, publishing, featuring, deleting,
+and attaching image/video media to project entries.
 
 1. Create a Supabase project.
 2. Open the Supabase SQL editor and run `supabase-projects.sql`.
 3. Replace every `you@example.com` in that SQL file with your real admin email
    before running it.
+   If you already ran an older version of the SQL file, run it again so the
+   required `grant` statements are applied.
 4. Copy `.env.example` to `.env.local` and fill in:
 
 ```bash
@@ -22,6 +24,10 @@ VITE_ADMIN_EMAIL=you@example.com
 
 The public pages fall back to `src/data/projects.ts` when Supabase is not
 configured or cannot be reached, which keeps local development forgiving.
+
+Rerunning `supabase-projects.sql` is safe for existing project rows. It uses
+`alter table ... add column if not exists` for schema changes and only seeds the
+starter projects when their slugs do not already exist.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

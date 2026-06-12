@@ -1,14 +1,22 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { adminEmail, isSupabaseConfigured, supabase } from '../lib/supabase'
 import {
   createProject,
   deleteProject,
   getAdminProjects,
+  uploadProjectMedia,
   updateProject,
   type AdminProject,
   type ProjectInput,
 } from '../services/projectService'
+import { getErrorMessage } from '../utils/errorMessage'
 
 const emptyProject: ProjectInput = {
   slug: '',
@@ -16,6 +24,10 @@ const emptyProject: ProjectInput = {
   course: '',
   tools: [],
   description: '',
+  notes: '',
+  imageUrls: [],
+  videoUrls: [],
+  coverImageUrl: '',
   featured: true,
   displayOrder: 0,
   isPublished: true,
@@ -36,6 +48,10 @@ function toProjectInput(project: AdminProject): ProjectInput {
     course: project.course,
     tools: project.tools,
     description: project.description,
+    notes: project.notes ?? '',
+    imageUrls: project.imageUrls ?? [],
+    videoUrls: project.videoUrls ?? [],
+    coverImageUrl: project.coverImageUrl ?? project.imageUrls?.[0] ?? '',
     featured: project.featured,
     displayOrder: project.displayOrder,
     isPublished: project.isPublished,
@@ -52,6 +68,7 @@ export function AdminProjectsPage() {
   const [toolsText, setToolsText] = useState('')
   const [isLoading, setIsLoading] = useState(Boolean(supabase))
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const canManage = useMemo(() => {
@@ -103,9 +120,7 @@ export function AdminProjectsPage() {
       const nextProjects = await getAdminProjects()
       setProjects(nextProjects)
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Could not load projects.',
-      )
+      setErrorMessage(getErrorMessage(error, 'Could not load projects.'))
     }
   }
 
@@ -169,6 +184,10 @@ export function AdminProjectsPage() {
         .split(',')
         .map((tool) => tool.trim())
         .filter(Boolean),
+      coverImageUrl:
+        form.coverImageUrl && form.imageUrls.includes(form.coverImageUrl)
+          ? form.coverImageUrl
+          : form.imageUrls[0] || '',
     }
 
     try {
@@ -182,12 +201,74 @@ export function AdminProjectsPage() {
       setSelectedId(null)
       await loadProjects()
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Could not save project.',
-      )
+      setErrorMessage(getErrorMessage(error, 'Could not save project.'))
     } finally {
       setIsSaving(false)
     }
+  }
+
+  async function handleMediaUpload(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? [])
+    const projectSlug = form.slug || slugify(form.title)
+
+    if (!files.length) {
+      return
+    }
+
+    if (!projectSlug) {
+      setErrorMessage('Add a project title or slug before uploading media.')
+      event.target.value = ''
+      return
+    }
+
+    setIsUploading(true)
+    setErrorMessage('')
+
+    try {
+      const uploadedMedia = await Promise.all(
+        files.map((file) => uploadProjectMedia(file, projectSlug)),
+      )
+      const imageUrls = uploadedMedia
+        .filter((media) => media.type === 'images')
+        .map((media) => media.url)
+      const videoUrls = uploadedMedia
+        .filter((media) => media.type === 'videos')
+        .map((media) => media.url)
+
+      setForm((current) => ({
+        ...current,
+        imageUrls: [...current.imageUrls, ...imageUrls],
+        videoUrls: [...current.videoUrls, ...videoUrls],
+        coverImageUrl: current.coverImageUrl || imageUrls[0] || '',
+      }))
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Could not upload media.'))
+    } finally {
+      event.target.value = ''
+      setIsUploading(false)
+    }
+  }
+
+  function handleRemoveImage(imageUrl: string) {
+    setForm((current) => {
+      const imageUrls = current.imageUrls.filter((url) => url !== imageUrl)
+
+      return {
+        ...current,
+        imageUrls,
+        coverImageUrl:
+          current.coverImageUrl === imageUrl
+            ? imageUrls[0] || ''
+            : current.coverImageUrl,
+      }
+    })
+  }
+
+  function handleRemoveVideo(videoUrl: string) {
+    setForm((current) => ({
+      ...current,
+      videoUrls: current.videoUrls.filter((url) => url !== videoUrl),
+    }))
   }
 
   async function handleDelete() {
@@ -204,9 +285,7 @@ export function AdminProjectsPage() {
       setSelectedId(null)
       await loadProjects()
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Could not delete project.',
-      )
+      setErrorMessage(getErrorMessage(error, 'Could not delete project.'))
     } finally {
       setIsSaving(false)
     }
@@ -391,6 +470,21 @@ export function AdminProjectsPage() {
           </label>
 
           <label>
+            Project notes
+            <textarea
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  notes: event.target.value,
+                }))
+              }
+              placeholder="Problem statement, design decisions, test results, build notes, links..."
+              rows={7}
+              value={form.notes}
+            />
+          </label>
+
+          <label>
             Tools
             <input
               onChange={(event) => setToolsText(event.target.value)}
@@ -398,6 +492,92 @@ export function AdminProjectsPage() {
               value={toolsText}
             />
           </label>
+
+          <div className="media-admin-block">
+            <div>
+              <p className="eyebrow">Media</p>
+              <h3>Images and videos</h3>
+            </div>
+
+            <label>
+              Upload files
+              <input
+                accept="image/*,video/*"
+                disabled={isUploading}
+                multiple
+                onChange={handleMediaUpload}
+                type="file"
+              />
+            </label>
+
+            {form.imageUrls.length > 0 ? (
+              <div className="media-preview-section">
+                <h4>Images</h4>
+                <div className="media-preview-grid">
+                  {form.imageUrls.map((imageUrl) => {
+                    const isCover = form.coverImageUrl === imageUrl
+
+                    return (
+                      <div className="media-preview-card" key={imageUrl}>
+                        <img src={imageUrl} alt="" />
+                        <div className="media-preview-actions">
+                          <button
+                            className={
+                              isCover
+                                ? 'media-action media-action-active'
+                                : 'media-action'
+                            }
+                            onClick={() =>
+                              setForm((current) => ({
+                                ...current,
+                                coverImageUrl: imageUrl,
+                              }))
+                            }
+                            type="button"
+                          >
+                            {isCover ? 'Highlight image' : 'Use as highlight'}
+                          </button>
+                          <button
+                            className="media-action danger-action"
+                            onClick={() => handleRemoveImage(imageUrl)}
+                            type="button"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            {form.videoUrls.length > 0 ? (
+              <div className="media-preview-section">
+                <h4>Videos</h4>
+                <div className="media-preview-grid">
+                  {form.videoUrls.map((videoUrl) => (
+                    <div className="media-preview-card" key={videoUrl}>
+                      <video controls preload="metadata">
+                        <source src={videoUrl} />
+                      </video>
+                      <div className="media-preview-actions">
+                        <button
+                          className="media-action danger-action"
+                          onClick={() => handleRemoveVideo(videoUrl)}
+                          type="button"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {isUploading ? <p className="success-message">Uploading media...</p> : null}
+          </div>
 
           <div className="admin-field-grid">
             <label>

@@ -4,6 +4,10 @@ export type Project = {
   course: string
   tools: string[]
   description: string
+  notes?: string
+  imageUrls?: string[]
+  videoUrls?: string[]
+  coverImageUrl?: string
   featured?: boolean
   displayOrder?: number
   isPublished?: boolean
@@ -17,6 +21,8 @@ export const projects: Project[] = [
     tools: ['Raspberry Pi Pico', 'MicroPython', 'PWM', 'VS Code'],
     description:
       'Built and programmed an RGB LED circuit using pulse-width modulation to control color and brightness through code.',
+    notes:
+      'This route is ready for the full case study: problem statement, design decisions, diagrams, build photos, test results, and links to supporting materials.',
     featured: true,
     displayOrder: 1,
     isPublished: true,
@@ -28,6 +34,8 @@ export const projects: Project[] = [
     tools: ['Voltage Divider', 'ADC', 'Python', 'Circuit Analysis'],
     description:
       'Used a thermistor and voltage divider circuit to read changing temperature values and trigger status LEDs based on set points.',
+    notes:
+      'This route is ready for the full case study: problem statement, design decisions, diagrams, build photos, test results, and links to supporting materials.',
     featured: true,
     displayOrder: 2,
     isPublished: true,
@@ -39,6 +47,8 @@ export const projects: Project[] = [
     tools: ['CAD', '3D Modeling', 'Technical Drawings'],
     description:
       'Created mechanical-style models and drawings to practice dimensioning, visualization, and design communication.',
+    notes:
+      'This route is ready for the full case study: problem statement, design decisions, diagrams, build photos, test results, and links to supporting materials.',
     featured: true,
     displayOrder: 3,
     isPublished: true,
