@@ -4,6 +4,9 @@ export type Project = {
   course: string
   tools: string[]
   description: string
+  featured?: boolean
+  displayOrder?: number
+  isPublished?: boolean
 }
 
 export const projects: Project[] = [
@@ -14,6 +17,9 @@ export const projects: Project[] = [
     tools: ['Raspberry Pi Pico', 'MicroPython', 'PWM', 'VS Code'],
     description:
       'Built and programmed an RGB LED circuit using pulse-width modulation to control color and brightness through code.',
+    featured: true,
+    displayOrder: 1,
+    isPublished: true,
   },
   {
     slug: 'thermistor-temperature-monitor',
@@ -22,6 +28,9 @@ export const projects: Project[] = [
     tools: ['Voltage Divider', 'ADC', 'Python', 'Circuit Analysis'],
     description:
       'Used a thermistor and voltage divider circuit to read changing temperature values and trigger status LEDs based on set points.',
+    featured: true,
+    displayOrder: 2,
+    isPublished: true,
   },
   {
     slug: 'cad-design-practice',
@@ -30,6 +39,9 @@ export const projects: Project[] = [
     tools: ['CAD', '3D Modeling', 'Technical Drawings'],
     description:
       'Created mechanical-style models and drawings to practice dimensioning, visualization, and design communication.',
+    featured: true,
+    displayOrder: 3,
+    isPublished: true,
   },
 ]
 

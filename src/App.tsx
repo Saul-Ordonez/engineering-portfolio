@@ -2,6 +2,7 @@ import './App.css'
 import { Header } from './components/Header'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AboutPage } from './pages/AboutPage'
+import { AdminProjectsPage } from './pages/AdminProjectsPage'
 import { ContactPage } from './pages/ContactPage'
 import { HomePage } from './pages/HomePage'
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
@@ -17,6 +18,7 @@ function App() {
         <Route path="/projects/:slug" element={<ProjectDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/admin/projects" element={<AdminProjectsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </main>

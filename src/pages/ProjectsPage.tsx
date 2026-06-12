@@ -1,7 +1,9 @@
 import { ProjectCard } from '../components/ProjectCard'
-import { projects } from '../data/projects'
+import { usePublishedProjects } from '../hooks/useProjects'
 
 export function ProjectsPage() {
+  const { projects, isLoading } = usePublishedProjects()
+
   return (
     <section className="section route-section">
       <div className="section-heading">
@@ -14,6 +16,7 @@ export function ProjectsPage() {
       </div>
 
       <div className="project-grid">
+        {isLoading ? <p>Loading projects...</p> : null}
         {projects.map((project) => (
           <ProjectCard project={project} key={project.slug} />
         ))}

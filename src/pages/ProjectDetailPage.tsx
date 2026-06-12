@@ -1,9 +1,17 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { projects } from '../data/projects'
+import { useProject } from '../hooks/useProjects'
 
 export function ProjectDetailPage() {
   const { slug } = useParams()
-  const project = projects.find((item) => item.slug === slug)
+  const { project, isLoading } = useProject(slug)
+
+  if (isLoading) {
+    return (
+      <section className="section route-section">
+        <p>Loading project...</p>
+      </section>
+    )
+  }
 
   if (!project) {
     return <Navigate to="/projects" replace />

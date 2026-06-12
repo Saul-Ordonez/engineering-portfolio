@@ -1,5 +1,28 @@
 # React + TypeScript + Vite
 
+## Supabase project admin
+
+This portfolio can load project cards from Supabase and includes a private
+`/admin/projects` screen for adding, editing, publishing, featuring, and
+deleting project entries.
+
+1. Create a Supabase project.
+2. Open the Supabase SQL editor and run `supabase-projects.sql`.
+3. Replace every `you@example.com` in that SQL file with your real admin email
+   before running it.
+4. Copy `.env.example` to `.env.local` and fill in:
+
+```bash
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
+VITE_ADMIN_EMAIL=you@example.com
+```
+
+5. Restart Vite, then visit `/admin/projects`.
+
+The public pages fall back to `src/data/projects.ts` when Supabase is not
+configured or cannot be reached, which keeps local development forgiving.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

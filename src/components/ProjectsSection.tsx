@@ -1,7 +1,9 @@
-import { featuredProjects } from '../data/projects'
+import { useFeaturedProjects } from '../hooks/useProjects'
 import { ProjectCard } from './ProjectCard'
 
 export function ProjectsSection() {
+  const { projects, isLoading } = useFeaturedProjects()
+
   return (
     <section className="section" id="projects">
       <div className="section-heading">
@@ -15,7 +17,8 @@ export function ProjectsSection() {
       </div>
 
       <div className="project-grid">
-        {featuredProjects.map((project) => (
+        {isLoading ? <p>Loading projects...</p> : null}
+        {projects.map((project) => (
           <ProjectCard project={project} key={project.slug} />
         ))}
       </div>
